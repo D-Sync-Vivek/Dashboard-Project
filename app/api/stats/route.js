@@ -25,9 +25,13 @@ export async function GET() {
       .toArray();
 
       const totalMonthlySalesWithNames = totalMonthlySales.map(item => ({
-        Month: monthNames[item._id - 1],
+        month: monthNames[item._id - 1],
         totalSales: item.total
       }))
+      // sort the month.
+      totalMonthlySalesWithNames.sort((a, b) =>{
+        return monthNames.indexOf(a.month) - monthNames.indexOf(b.month);
+      });
 
     // Product sales.
     const productSales = await db
@@ -44,7 +48,7 @@ export async function GET() {
     const productSaleswithShare = productSales.map((product) => ({
       product: product._id,
       totalSales: product.total,
-      share: totalSales > 0 ? (product.total / totalSales) * 100 : 0,
+      share: totalSales > 0 ? Math.round((product.total / totalSales) * 100) : 0,
     }));
 
     return Response.json({
